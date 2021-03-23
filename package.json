@@ -10,16 +10,20 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:mdcpy.helloWorld"
+    "onCommand:mdcpy.paste"
   ],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "mdcpy.helloWorld",
-        "title": "Hello World"
+        "command": "mdcpy.paste",
+        "title": "Paste to Markdown"
       }
-    ]
+    ],
+    "keybindings": {
+      "command": "mdcpy.paste",
+      "key": "ctrl+v"
+    }
   },
   "scripts": {
     "lint": "eslint .",
