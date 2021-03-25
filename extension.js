@@ -36,31 +36,67 @@ function activate(context) {
 
 		// 解析出当前在编辑文件的所处目录位置
 		let filePath = fileUri.fsPath;
-		console.log(filePath)
 		let folderPath = path.dirname(filePath);
-		let targetPath = path.join(folderPath, 'img')
-		let relativePath = ''
-		if (!fs.existsSync(targetPath)) {
+		let imgStoreDir = path.join(folderPath, 'img')
+		if (!fs.existsSync(imgStoreDir)) {
 			// 如果不存在img目录则使用
 			// 正在编辑文件的同级目录作为存储图片的位置
-			targetPath = folderPath;
-		}else{
-			relativePath = 'img/'
+			imgStoreDir = folderPath;
 		}
 
 		vscode.env.clipboard.readText().then(text => {
-			if (text === '') {
-				let fileName = `IMG${moment().format('yyyyMMDDHHmmss')}.png`
-				let imgSavePath = path.join(targetPath, fileName);
-				relativePath = relativePath + fileName;
-				// 粘贴图片
-				saveClipboardImageToFileAndGetPath(imgSavePath).then(p => {
-					insterIntoEditor({ type: 'Image', content: relativePath })
-				})
-			} else {
-				console.log(">> Paste Text Content:", text)
-				insterIntoEditor({ type: 'Text', content: text })
+			if (text !== '') {
+				// 文本类型粘贴
+				// console.log(">> Paste Text Content:", text)
+				insterIntoEditor(text)
+				return
 			}
+			// 尝试使用图片粘贴
+			try {
+				let savePath = path.join(imgStoreDir, `IMG${moment().format('yyyyMMDDHHmmss')}.png`);
+				// 保存图片到临时位置使用临时文件名称
+				saveClipboardImageToFileAndGetPath(savePath).then(p => {
+					// 弹出提示框让用户输入图片名称
+					return vscode.window.showInputBox({
+						ignoreFocusOut: true,
+						placeHolder: '请输入图片名称',
+						validateInput: (value) => {
+							// 校验文件名称是否已经存在
+							let newName = path.join(imgStoreDir, `${value}.png`);
+							if (fs.existsSync(newName)) {
+								return `${value}.png 名称已经存在!`
+							}
+							return ""
+						}
+					})
+				}).then(name => {
+					// 重命名文件
+					return new Promise((resolve, rejects) => {
+						// 用户取消输入
+						if (name === undefined || name === '') {
+							resolve(savePath);
+							return;
+						}
+						let newName = path.join(imgStoreDir, `${name}.png`);
+						fs.rename(savePath, newName, (error) => {
+							if (error) {
+								rejects(">> 文件重命名失败:" + error)
+								return
+							}
+							// 传入新的名称文件
+							resolve(newName)
+						});
+					})
+				}).then(imgPath => {
+					// 从文件保存路径解析出文件名以及文件相对路径
+					let relativePath = imgPath.replace(path.join(folderPath, "/"), '').replace('\\', '/')
+					let fileNameIndex = relativePath.lastIndexOf('/')
+					fileNameIndex = fileNameIndex == -1 ? 0 : fileNameIndex + 1
+					// 构造Markdown Image Tag
+					let txt = `![${relativePath.substring(fileNameIndex, relativePath.length - 4)}](${relativePath})`
+					insterIntoEditor(txt)
+				})
+			} catch (e) { console.error(e) }
 		})
 	});
 
@@ -69,21 +105,10 @@ function activate(context) {
 
 /**
  * 插入内容到
- * @param {*} param 插入参数 {type:String, content:String}
+ * @param {String} text 插入内容
  */
-function insterIntoEditor(param) {
+function insterIntoEditor(text) {
 	let editor = vscode.window.activeTextEditor;
-	let { type, content } = param
-	let text = ''
-	switch (type) {
-		case 'Image':
-			text = `![](${content})`
-			break;
-		case 'Text':
-			text = content
-			break;
-	}
-	// 粘贴
 	editor.edit(it => {
 		let current = editor.selection;
 		if (current.isEmpty) {
