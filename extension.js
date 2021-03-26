@@ -180,7 +180,9 @@ function saveClipboardImageToFileAndGetPath(imagePath) {
 
 
 // this method is called when your extension is deactivated
-function deactivate() { }
+function deactivate() { 
+	console.log(">> extension deactivate")
+ }
 
 module.exports = {
 	activate,

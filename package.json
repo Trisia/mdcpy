@@ -10,20 +10,16 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:mdcpy.paste"
+    "onLanguage:markdown"
   ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "mdcpy.paste",
-        "title": "Paste to Markdown"
-      }
-    ],
     "keybindings": {
       "command": "mdcpy.paste",
-      "key": "ctrl+v"
+      "key": "ctrl+v",
+      "when": "editorTextFocus && resourceLangId == markdown"
     }
+
   },
   "scripts": {
     "lint": "eslint .",
