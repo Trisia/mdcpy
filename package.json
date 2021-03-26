@@ -4,13 +4,22 @@
   "publisher": "cliven",
   "description": "Markdown ctrl+v paste image.",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Trisia/mdcpy.git"
+  },
   "engines": {
     "vscode": "^1.54.0"
   },
   "categories": [
-    "Other", "Keymaps"
+    "Other",
+    "Keymaps"
   ],
-  "keywords": ["markdown", "image", "paste"],
+  "keywords": [
+    "markdown",
+    "image",
+    "paste"
+  ],
   "activationEvents": [
     "onLanguage:markdown"
   ],
@@ -21,7 +30,6 @@
       "key": "ctrl+v",
       "when": "editorTextFocus && resourceLangId == markdown"
     }
-
   },
   "scripts": {
     "lint": "eslint .",
