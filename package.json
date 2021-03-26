@@ -1,14 +1,16 @@
 {
   "name": "mdcpy",
   "displayName": "mdcpy",
-  "description": "Markdown edit support add image etc.",
+  "publisher": "cliven",
+  "description": "Markdown ctrl+v paste image.",
   "version": "1.0.0",
   "engines": {
     "vscode": "^1.54.0"
   },
   "categories": [
-    "Other"
+    "Other", "Keymaps"
   ],
+  "keywords": ["markdown", "image", "paste"],
   "activationEvents": [
     "onLanguage:markdown"
   ],
