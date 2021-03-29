@@ -9,3 +9,6 @@ mdcpy 在markdown文件实现`ctrl+v`粘贴剪贴板内的图片。
 使用过程就是，截图之后直接在markdown文件内`ctrl+v`就行：
 
 ![demo演示](demo.gif)
+
+
+该项目参考了： [mushanshitiancai . vscode-paste-image](https://github.com/mushanshitiancai/vscode-paste-image)
